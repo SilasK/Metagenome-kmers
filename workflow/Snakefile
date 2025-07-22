@@ -1,0 +1,13 @@
+from pathlib import Path
+
+# absolute path to snakemake dir
+snakemake_dir = Path(workflow.snakefile).parent.resolve()
+# include default config values
+configfile: f"{snakemake_dir.parent}/config/default_config.yaml"
+
+
+
+
+
+include: "rules/input_functions.smk"
+include: "rules/sylph.smk"

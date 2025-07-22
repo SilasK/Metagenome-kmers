@@ -1,0 +1,9 @@
+
+threads_simple: 2
+threads: 8
+
+mem_simple: 1000
+mem_default: 40000
+
+k_mer_size: 51
+min_kmer_count: 2
