@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 
 
 sample_name_constraint = "[A-Za-z][A-Za-z0-9]+"
@@ -8,8 +9,14 @@ wildcard_constraints:
     sample=sample_name_constraint,
 
 
-sample_table_file = "samples.csv"
-SampleTable = pd.read_csv(sample_table_file, index_col=0)
+if Path("samples.tsv").exists():
+    SampleTable = pd.read_table("samples.tsv", index_col=0, sep="\t")
+elif Path("samples.csv").exists():
+    SampleTable = pd.read_csv("samples.csv", index_col=0)
+else:
+    raise FileNotFoundError(
+        "No sample table found. Please provide a 'samples.tsv' or 'samples.csv' file."
+    )
 
 
 assert SampleTable.index.is_unique, "Sample table index is not unique"
@@ -35,6 +42,11 @@ else:
     FRACTIONS = ["se"]
 
 
+logger.info(
+    f"Found {len(SAMPLES)} {'paired-end' if PAIRED else 'single-end'} samples in the sample table."
+)
+
+
 def get_qc_reads(wildcards):
     headers = ["Reads_QC_" + f for f in FRACTIONS]
 
@@ -49,5 +61,3 @@ def get_raw_reads(wildcards):
     fastq_dir = Path(config["fastq_dir"])
 
     return [fastq_dir / f for f in SampleTable.loc[wildcards.sample, headers]]
-
-
